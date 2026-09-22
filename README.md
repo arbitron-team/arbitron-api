@@ -48,6 +48,7 @@ Attribute republished figures as "Data: Arbitron" with a link to `meta.url`, and
 - `mcp/server.json`: the manifest published to the official MCP registry.
 - `mcp/clients/`: configuration snippets for Claude Desktop, Cursor and ChatGPT.
 - `examples/`: curl, Python and Node examples.
+- `plugin.json` and `mcp.json`: the Agent Plugins 1.0 package (Open Plugins standard), so clients and directories that read it discover the MCP server from the repository root.
 - `.cursor-plugin/`: the plugin manifest for the Cursor marketplace.
 
 Files here are licensed under the [MIT License](LICENSE). The data the API returns is subject to the [terms](https://arbitron.app/terms).

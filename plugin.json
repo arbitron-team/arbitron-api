@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "arbitron",
+  "version": "1.2.1",
+  "description": "Funding rates, cross-venue spreads and listings for crypto perpetual futures, from Arbitron. Read-only MCP server.",
+  "author": { "name": "Arbitron", "url": "https://arbitron.app" },
+  "homepage": "https://arbitron.app/developers",
+  "repository": "https://github.com/arbitron-team/arbitron-api",
+  "license": "MIT",
+  "keywords": ["crypto", "funding-rates", "perpetual-futures", "arbitrage", "market-data", "mcp"]
+}
