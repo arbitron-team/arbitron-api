@@ -1,0 +1,12 @@
+{
+  "name": "arbitron",
+  "displayName": "Arbitron",
+  "version": "1.2.0",
+  "description": "Funding rates, cross-venue spreads and listings for crypto perpetual futures, from Arbitron. Read-only.",
+  "author": { "name": "Arbitron", "url": "https://arbitron.app" },
+  "homepage": "https://arbitron.app/developers",
+  "repository": "https://github.com/arbitron-team/arbitron-api",
+  "license": "MIT",
+  "keywords": ["crypto", "funding-rates", "perpetual-futures", "arbitrage", "market-data", "mcp"],
+  "mcpServers": "./mcp.json"
+}

@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "arbitron": {
+      "url": "https://arbitron.app/mcp"
+    }
+  }
+}

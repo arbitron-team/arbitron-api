@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "arbitron": {
+      "url": "https://arbitron.app/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:ARBITRON_KEY}"
+      }
+    }
+  }
+}
