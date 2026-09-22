@@ -1,0 +1,27 @@
+name: Refresh the served artefacts
+
+# Weekly, and on demand: pull the OpenAPI document and the server card as arbitron.app serves
+# them, and commit them when they changed, so this repository never drifts from production.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        run: ./scripts/refresh.sh
+      - name: Commit when changed
+        run: |
+          if git diff --quiet; then echo "no change"; exit 0; fi
+          git config user.name "arbitron-bot"
+          git config user.email "support@arbitron.app"
+          git add openapi/openapi.json mcp/server-card.json
+          git commit -m "Refresh the OpenAPI document and the server card from production"
+          git push

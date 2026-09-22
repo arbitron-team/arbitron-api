@@ -3,7 +3,11 @@
   "name": "app.arbitron/mcp",
   "title": "Arbitron",
   "description": "Funding rates, cross-venue spreads and listings for crypto perpetual futures. Read-only.",
-  "version": "1.2.0",
+  "repository": {
+    "url": "https://github.com/arbitron-team/arbitron-api",
+    "source": "github"
+  },
+  "version": "1.2.1",
   "websiteUrl": "https://arbitron.app/developers",
   "remotes": [
     {
