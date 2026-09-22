@@ -1,0 +1,3019 @@
+{
+    [1m"openapi"[0m: [32m"3.1.1"[0m,
+    [1m"info"[0m: {
+        [1m"title"[0m: [32m"Arbitron API"[0m,
+        [1m"description"[0m: [32m"Funding rates, executable cross-venue spreads and the listings calendar across the perpetual futures venues Arbitron tracks. Read-only JSON over HTTPS. Authenticate with an API key (`Authorization: Bearer arb_live_...`); create one at https://arbitron.app/settings/api. Every response carries `RateLimit` headers and an `ETag`; a `304` costs nothing. Errors are RFC 9457 problem details whose `type` links to https://arbitron.app/developers/errors."[0m,
+        [1m"termsOfService"[0m: [32m"https://arbitron.app/terms"[0m,
+        [1m"contact"[0m: {
+            [1m"name"[0m: [32m"Arbitron"[0m,
+            [1m"url"[0m: [32m"https://arbitron.app/developers"[0m,
+            [1m"email"[0m: [32m"support@arbitron.app"[0m
+        },
+        [1m"version"[0m: [32m"1.0.0"[0m
+    },
+    [1m"servers"[0m: [
+        {
+            [1m"url"[0m: [32m"https://arbitron.app"[0m,
+            [1m"description"[0m: [32m"Production"[0m
+        }
+    ],
+    [1m"paths"[0m: {
+        [1m"/api/v1"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Where everything is"[0m,
+                [1m"description"[0m: [32m"Anonymous. Links to the docs, the OpenAPI document, llms.txt, the MCP server and the plans, plus the endpoint list with the scope each one needs."[0m,
+                [1m"operationId"[0m: [32m"discover"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/DiscoveryResponse"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/funding"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Current funding rate on every venue and symbol"[0m,
+                [1m"description"[0m: [32m"One row per perpetual contract on every venue Arbitron tracks, sorted by absolute rate. Rates are percent per settlement; apr_pct is the annualised carry net of costs. Filter by coin, venue, signed or absolute rate bounds, APR, 7d/30d sums, settlement interval, contract type, volume and time to the next settlement; sort by any of them; page with cursor."[0m,
+                [1m"operationId"[0m: [32m"listFunding"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"coin"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"One ticker or a comma-separated list, e.g. BTC,ETH. Case-insensitive."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows on these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exclude_exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Drop rows on these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_rate_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose rate_pct is at least this (signed), e.g. 0.05 or -0.01."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_rate_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose rate_pct is at most this (signed), e.g. -0.01 for negative funding only."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_abs_rate_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose |rate_pct| is at least this, e.g. 0.05."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_abs_rate_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose |rate_pct| is at most this."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_apr_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose apr_pct is at least this (signed). Rows without an APR are dropped."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_apr_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose apr_pct is at most this (signed)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_sum_7d_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose sum_7d_pct is at least this (signed)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_sum_7d_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose sum_7d_pct is at most this (signed)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_sum_30d_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose sum_30d_pct is at least this (signed)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_sum_30d_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose sum_30d_pct is at most this (signed)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"interval_hours"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows settling on these intervals, comma-separated, e.g. 1 or 4,8."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"is_inverse"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"true keeps coin-margined (inverse) contracts only, false keeps linear only. Default: both."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"boolean"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_volume_usdt"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose 24h volume is at least this many USDT, e.g. 1000000."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_volume_usdt"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose 24h volume is at most this many USDT."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"settles_within_minutes"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows whose next settlement is within this many minutes, 1 to 1440, e.g. 30."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sort"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"abs_rate_desc (default), abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rows per page, 1 to 500 (Demo: 50). Default 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"cursor"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"meta.next_cursor from the previous page."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfIReadOnlyListOfFundingRateItem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: [
+                                        {
+                                            [1m"exchange"[0m: [32m"Binance"[0m,
+                                            [1m"symbol"[0m: [32m"BTC-USDT"[0m,
+                                            [1m"coin"[0m: [32m"BTC"[0m,
+                                            [1m"is_inverse"[0m: [1;34mfalse[0m,
+                                            [1m"rate_pct"[0m: [33m0.01[0m,
+                                            [1m"apr_pct"[0m: [33m10.95[0m,
+                                            [1m"sum_7d_pct"[0m: [33m0.21[0m,
+                                            [1m"sum_30d_pct"[0m: [33m0.84[0m,
+                                            [1m"interval_hours"[0m: [33m8[0m,
+                                            [1m"next_funding_at"[0m: [32m"2026-09-21T16:00:00Z"[0m,
+                                            [1m"volume_24h_usdt"[0m: [33m3498540070[0m
+                                        },
+                                        {
+                                            [1m"exchange"[0m: [32m"GateIo"[0m,
+                                            [1m"symbol"[0m: [32m"ONE-USDT"[0m,
+                                            [1m"coin"[0m: [32m"ONE"[0m,
+                                            [1m"is_inverse"[0m: [1;34mfalse[0m,
+                                            [1m"rate_pct"[0m: [33m-0.7952[0m,
+                                            [1m"apr_pct"[0m: [33m-870.7[0m,
+                                            [1m"sum_7d_pct"[0m: [33m-2.4[0m,
+                                            [1m"sum_30d_pct"[0m: [33m-5.1[0m,
+                                            [1m"interval_hours"[0m: [33m8[0m,
+                                            [1m"next_funding_at"[0m: [32m"2026-09-21T16:00:00Z"[0m,
+                                            [1m"volume_24h_usdt"[0m: [33m30509358[0m
+                                        }
+                                    ],
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/funding-rates?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m2[0m,
+                                        [1m"total"[0m: [33m4213[0m,
+                                        [1m"next_cursor"[0m: [32m"Mg"[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    },
+                    [1m"404"[0m: {
+                        [1m"description"[0m: [32m"Not Found"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/funding/{coin}"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"One coin's funding across venues"[0m,
+                [1m"description"[0m: [32m"Every venue quoting the coin, the spread between the highest and lowest rate, and which venue pays a short or a long best right now. Narrow the ranking to a venue list or a volume floor."[0m,
+                [1m"operationId"[0m: [32m"getCoinFunding"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"coin"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"description"[0m: [32m"Ticker, e.g. BTC. Case-insensitive."[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rank only these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exclude_exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Leave these venues out of the ranking. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_volume_usdt"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rank only venues whose 24h volume on the coin is at least this many USDT."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfCoinFundingResponse"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: {
+                                        [1m"coin"[0m: [32m"BTC"[0m,
+                                        [1m"venue_count"[0m: [33m18[0m,
+                                        [1m"spread_pct"[0m: [33m0.0176[0m,
+                                        [1m"highest"[0m: {
+                                            [1m"exchange"[0m: [32m"Mexc"[0m,
+                                            [1m"symbol"[0m: [32m"BTC-USDT"[0m,
+                                            [1m"rate_pct"[0m: [33m0.015[0m
+                                        },
+                                        [1m"lowest"[0m: {
+                                            [1m"exchange"[0m: [32m"Hyperliquid"[0m,
+                                            [1m"symbol"[0m: [32m"BTC-USDT"[0m,
+                                            [1m"rate_pct"[0m: [33m-0.0026[0m
+                                        },
+                                        [1m"best_short_exchange"[0m: [32m"Mexc"[0m,
+                                        [1m"best_long_exchange"[0m: [32m"Hyperliquid"[0m,
+                                        [1m"total_volume_24h_usdt"[0m: [33m41230000000[0m,
+                                        [1m"inverse_venues"[0m: [
+                                            [32m"Blofin"[0m,
+                                            [32m"Bitget"[0m
+                                        ],
+                                        [1m"rates"[0m: [
+                                            {
+                                                [1m"exchange"[0m: [32m"Mexc"[0m,
+                                                [1m"symbol"[0m: [32m"BTC-USDT"[0m,
+                                                [1m"coin"[0m: [32m"BTC"[0m,
+                                                [1m"is_inverse"[0m: [1;34mfalse[0m,
+                                                [1m"rate_pct"[0m: [33m0.015[0m,
+                                                [1m"apr_pct"[0m: [33m16.4[0m,
+                                                [1m"sum_7d_pct"[0m: [33m0.31[0m,
+                                                [1m"sum_30d_pct"[0m: [33m1.2[0m,
+                                                [1m"interval_hours"[0m: [33m8[0m,
+                                                [1m"next_funding_at"[0m: [32m"2026-09-21T16:00:00Z"[0m,
+                                                [1m"volume_24h_usdt"[0m: [33m812000000[0m
+                                            }
+                                        ]
+                                    },
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/funding-rates/coin/btc?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m18[0m,
+                                        [1m"total"[0m: [33m18[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"404"[0m: {
+                        [1m"description"[0m: [32m"Not Found"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/funding/history"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Funding history, daily or per settlement"[0m,
+                [1m"description"[0m: [32m"resolution=1d returns one annualised APR point per day for each venue quoting the coin (up to 180 days). resolution=settlement returns every settlement print for one venue (up to 92 days per call). Window by from/to or days; order newest first and cap the points to read the last N. How far back you may reach depends on the plan."[0m,
+                [1m"operationId"[0m: [32m"getFundingHistory"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"coin"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Ticker, e.g. BTC."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Venues to include; a list for 1d, exactly one for settlement. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exclude_exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Venues to leave out (1d). One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"resolution"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"1d (default) or settlement."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"from"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"ISO 8601 UTC. Default: 30 days before 'to' (1d) or 7 days (settlement)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"format"[0m: [32m"date-time"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"to"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"ISO 8601 UTC. Default: now."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"format"[0m: [32m"date-time"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"days"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Shortcut for 'from': this many days before 'to', 1 to 180. Ignored when 'from' is given."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"order"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"asc (default, oldest first) or desc (newest first)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Points per series at most, 1 to 5000, taken after ordering: order=desc&limit=10 is the last ten."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfFundingHistoryResponse"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: {
+                                        [1m"coin"[0m: [32m"ETH"[0m,
+                                        [1m"resolution"[0m: [32m"1d"[0m,
+                                        [1m"from"[0m: [32m"2026-09-14T00:00:00Z"[0m,
+                                        [1m"to"[0m: [32m"2026-09-21T00:00:00Z"[0m,
+                                        [1m"series"[0m: [
+                                            {
+                                                [1m"exchange"[0m: [32m"Binance"[0m,
+                                                [1m"symbol"[0m: [32m"ETH-USDT"[0m,
+                                                [1m"daily"[0m: [
+                                                    {
+                                                        [1m"day"[0m: [32m"2026-09-14"[0m,
+                                                        [1m"apr_pct"[0m: [33m9.12[0m
+                                                    },
+                                                    {
+                                                        [1m"day"[0m: [32m"2026-09-15"[0m,
+                                                        [1m"apr_pct"[0m: [33m10.95[0m
+                                                    },
+                                                    {
+                                                        [1m"day"[0m: [32m"2026-09-16"[0m,
+                                                        [1m"apr_pct"[0m: [1;34mnull[0m
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/funding-rates/coin/eth?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m1[0m,
+                                        [1m"total"[0m: [33m1[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    },
+                    [1m"403"[0m: {
+                        [1m"description"[0m: [32m"Forbidden"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    },
+                    [1m"404"[0m: {
+                        [1m"description"[0m: [32m"Not Found"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/spreads"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Current cross-venue spreads"[0m,
+                [1m"description"[0m: [32m"The spread between two venues' perpetuals on the same coin right now, one row per venue pair and symbol, from the engine's last print (seconds old). spread_pct is the better of the two entry directions and direction says which; both are given, with the bid and ask on each leg. Use /spreads/backtest for how often a spread paid over a window."[0m,
+                [1m"operationId"[0m: [32m"listSpreads"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"coin"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"One ticker or a comma-separated list, e.g. BTC,ETH. Case-insensitive."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep pairs with these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange_match"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"any (default): either leg is in 'exchange'. all: both legs are, i.e. spreads among the listed venues only."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exclude_exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Drop pairs with any of these venues on either leg. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_spread_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep pairs whose spread_pct is at least this many percent, e.g. 0.3."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_spread_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep pairs whose spread_pct is at most this many percent, e.g. 5 to drop dead markets."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"direction"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"long_a_short_b or short_a_long_b: keep pairs whose better side is that one. Default: both."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_volume_usdt"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep pairs where BOTH legs' 24h volume is at least this many USDT, e.g. 500000."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_strength"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep pairs whose strength is at least this, 0 to 5."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_age_seconds"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep pairs printed within this many seconds of meta.as_of, 1 to 120."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sort"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"spread_desc (default), spread_asc, volume_desc, volume_asc, strength_desc, updated_desc, coin_asc. volume is the smaller leg."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rows per page, 1 to 500 (Demo: 50). Default 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"cursor"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"meta.next_cursor from the previous page."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfIReadOnlyListOfCurrentSpreadItem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: [
+                                        {
+                                            [1m"symbol"[0m: [32m"SOL-USDT"[0m,
+                                            [1m"coin"[0m: [32m"SOL"[0m,
+                                            [1m"exchange_a"[0m: [32m"Binance"[0m,
+                                            [1m"exchange_b"[0m: [32m"Bybit"[0m,
+                                            [1m"spread_pct"[0m: [33m0.4132[0m,
+                                            [1m"direction"[0m: [32m"short_a_long_b"[0m,
+                                            [1m"long_a_short_b_pct"[0m: [33m-0.521[0m,
+                                            [1m"short_a_long_b_pct"[0m: [33m0.4132[0m,
+                                            [1m"bid_a"[0m: [33m142.31[0m,
+                                            [1m"ask_a"[0m: [33m142.32[0m,
+                                            [1m"bid_b"[0m: [33m141.72[0m,
+                                            [1m"ask_b"[0m: [33m141.73[0m,
+                                            [1m"volume_a_usdt"[0m: [33m512000000[0m,
+                                            [1m"volume_b_usdt"[0m: [33m388000000[0m,
+                                            [1m"funding_rate_a_pct"[0m: [33m0.01[0m,
+                                            [1m"funding_rate_b_pct"[0m: [33m0.0056[0m,
+                                            [1m"funding_interval_hours_a"[0m: [33m8[0m,
+                                            [1m"funding_interval_hours_b"[0m: [33m8[0m,
+                                            [1m"next_funding_at_a"[0m: [32m"2026-09-21T16:00:00Z"[0m,
+                                            [1m"next_funding_at_b"[0m: [32m"2026-09-21T16:00:00Z"[0m,
+                                            [1m"strength"[0m: [33m3[0m,
+                                            [1m"updated_at"[0m: [32m"2026-09-21T12:00:01Z"[0m
+                                        }
+                                    ],
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/signals?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m1[0m,
+                                        [1m"total"[0m: [33m2493[0m,
+                                        [1m"next_cursor"[0m: [32m"MQ"[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/spreads/backtest"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Backtested cross-venue spreads"[0m,
+                [1m"description"[0m: [32m"The public scanner's ranked spreads, priced against real order-book depth for an order of size_usd over the scan window. est_profit_pct is per round trip after fees; cycles counts how often the spread opened and closed. A backtest, not the live print: use /spreads for what the spread is right now. The Demo plan withholds the top rows; paid plans see all of them."[0m,
+                [1m"operationId"[0m: [32m"listSpreadBacktest"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"size_usd"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Order size the depth is priced at: 25, 100 or 500. Default 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"coin"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"One ticker or a comma-separated list, e.g. BTC,ETH. Case-insensitive."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads with these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange_match"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"any (default): either leg is in 'exchange'. all: both legs are."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exclude_exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Drop spreads with any of these venues on either leg. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_profit_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads whose est_profit_pct is at least this."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"max_profit_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads whose est_profit_pct is at most this."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_avg_profit_pct"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads whose avg_profit_pct is at least this."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_cycles"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads that opened and closed at least this many times over the window."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_confidence"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads whose confidence is at least this, 0 to 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_volume_usdt"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads where BOTH legs' 24h volume is at least this many USDT."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"active_within_hours"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep spreads whose last cycle closed within this many hours, 1 to 720."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sort"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"profit_desc (default), profit_asc, avg_profit_desc, cycles_desc, confidence_desc, volume_desc, spread_range_desc, last_cycle_desc, coin_asc."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rows per page, 1 to 500 (Demo: 50). Default 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"cursor"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"meta.next_cursor from the previous page."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfSpreadBacktestResponse"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: {
+                                        [1m"size_usd"[0m: [33m100[0m,
+                                        [1m"withheld_top"[0m: [33m0[0m,
+                                        [1m"spreads"[0m: [
+                                            {
+                                                [1m"symbol"[0m: [32m"ENA-USDT"[0m,
+                                                [1m"coin"[0m: [32m"ENA"[0m,
+                                                [1m"exchange_a"[0m: [32m"BingX"[0m,
+                                                [1m"exchange_b"[0m: [32m"Lighter"[0m,
+                                                [1m"est_profit_pct"[0m: [33m3.9783[0m,
+                                                [1m"avg_profit_pct"[0m: [33m1.214[0m,
+                                                [1m"fee_pct_cycle"[0m: [33m0.14[0m,
+                                                [1m"spread_range_pct"[0m: [33m6.2[0m,
+                                                [1m"cycles"[0m: [33m75[0m,
+                                                [1m"confidence"[0m: [33m69[0m,
+                                                [1m"volume_a_usdt"[0m: [33m21000000[0m,
+                                                [1m"volume_b_usdt"[0m: [33m9800000[0m,
+                                                [1m"last_cycle_at"[0m: [32m"2026-09-21T11:41:00Z"[0m
+                                            }
+                                        ]
+                                    },
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/arbitrage-scanner?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m1[0m,
+                                        [1m"total"[0m: [33m58[0m,
+                                        [1m"next_cursor"[0m: [32m"MQ"[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/listings"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Announced listings and delistings"[0m,
+                [1m"description"[0m: [32m"The listings calendar: what each venue has announced, when it takes effect and where the announcement is. Filter by coin, venue, kind, status, detection source, an effective window and 'new since' a time; nearest first by default."[0m,
+                [1m"operationId"[0m: [32m"listListings"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"coin"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"One ticker or a comma-separated list, e.g. BTC,ETH. Case-insensitive."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows on these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exclude_exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Drop rows on these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"type"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"listing or delisting. Default: both."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"status"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Exact status as the row carries it, e.g. preopen, newly listed, delisted."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"source"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"announcement, instruments or diff: how the row was detected. Default: all."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"from"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows effective at or after this time (ISO 8601 UTC)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"format"[0m: [32m"date-time"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"to"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows effective before this time (ISO 8601 UTC)."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"format"[0m: [32m"date-time"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"days_ahead"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Shortcut: rows effective between now and this many days ahead, 1 to 365. Ignored when from or to is given."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"detected_after"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep rows first seen after this time (ISO 8601 UTC): what is new since your last poll."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"format"[0m: [32m"date-time"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sort"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"nearest (default: upcoming soonest first, then past most recent first, undated last), effective_asc, effective_desc, detected_desc, detected_asc, coin_asc."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rows per page, 1 to 500 (Demo: 50). Default 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"cursor"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"meta.next_cursor from the previous page."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfIReadOnlyListOfListingItem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: [
+                                        {
+                                            [1m"exchange"[0m: [32m"BingX"[0m,
+                                            [1m"symbol"[0m: [32m"RCAT-USDT"[0m,
+                                            [1m"coin"[0m: [32m"RCAT"[0m,
+                                            [1m"kind"[0m: [32m"delisting"[0m,
+                                            [1m"effective_at"[0m: [32m"2026-09-22T02:00:00Z"[0m,
+                                            [1m"source"[0m: [32m"announcement"[0m,
+                                            [1m"announcement_url"[0m: [32m"https://bingx.com/en/support/notice-center/"[0m,
+                                            [1m"detected_at"[0m: [32m"2026-09-19T08:12:44Z"[0m
+                                        }
+                                    ],
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/listings?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m1[0m,
+                                        [1m"total"[0m: [33m19[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/exchanges"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"The venues"[0m,
+                [1m"description"[0m: [32m"Every venue the API serves, with tracked instrument counts, maximum leverage, the default taker fee and links to its contract specs and funding pages. Filter by name, tradability or spot; sort by instruments, fee or leverage. No scope needed beyond a valid key."[0m,
+                [1m"operationId"[0m: [32m"listExchanges"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"q"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Start of a venue name, e.g. Bi matches Binance, BingX, Bitget."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"trading_enabled"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"true keeps venues Arbitron can trade on, false the rest. Default: all."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"boolean"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"has_spot"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"true keeps venues with a spot market, false the rest. Default: all."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"boolean"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sort"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"name_asc (default), instruments_desc, fee_asc, leverage_desc."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfIReadOnlyListOfExchangeItem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: [
+                                        {
+                                            [1m"exchange"[0m: [32m"Binance"[0m,
+                                            [1m"name"[0m: [32m"Binance"[0m,
+                                            [1m"icon_url"[0m: [32m"https://arbitron.app/images/exchanges/binance.svg"[0m,
+                                            [1m"tracked_instruments"[0m: [33m512[0m,
+                                            [1m"max_leverage"[0m: [33m125[0m,
+                                            [1m"taker_fee_pct"[0m: [33m0.05[0m,
+                                            [1m"trading_enabled"[0m: [1;34mtrue[0m,
+                                            [1m"has_spot"[0m: [1;34mtrue[0m,
+                                            [1m"fee_url"[0m: [32m"https://www.binance.com/en/fee/futureFee"[0m,
+                                            [1m"specs_url"[0m: [32m"https://arbitron.app/exchanges/binance"[0m,
+                                            [1m"funding_url"[0m: [32m"https://arbitron.app/funding-rates/binance"[0m
+                                        }
+                                    ],
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/exchanges?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m1[0m,
+                                        [1m"total"[0m: [33m19[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/coins"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"Coins with a funding page"[0m,
+                [1m"description"[0m: [32m"Ticker lookup: q matches the start of a ticker (or anywhere in it with match=contains). Each coin carries the venues quoting it and its 24h perpetual volume; filter by venue, venue count or volume. No scope needed beyond a valid key."[0m,
+                [1m"operationId"[0m: [32m"listCoins"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"q"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Text to match against the ticker, e.g. PE matches PEPE and PENDLE."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"match"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"prefix (default): q is the start of the ticker. contains: q appears anywhere, so PEPE also finds 1000PEPE."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep coins quoted on these venues. One venue or a comma-separated list, spelled as /exchanges spells it, e.g. Binance,Bybit."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"exchange_match"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"any (default): quoted on at least one of 'exchange'. all: quoted on every one of them."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_venues"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep coins quoted on at least this many venues, 1 to 64."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"min_volume_usdt"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Keep coins whose 24h perpetual volume across venues is at least this many USDT."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                            [1m"type"[0m: [
+                                [32m"number"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"double"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sort"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"volume_desc (default), volume_asc, venues_desc, venues_asc, coin_asc."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Rows per page, 1 to 500 (Demo: 50). Default 100."[0m,
+                        [1m"schema"[0m: {
+                            [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                            [1m"type"[0m: [
+                                [32m"integer"[0m,
+                                [32m"string"[0m
+                            ],
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"cursor"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"meta.next_cursor from the previous page."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"fields"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"description"[0m: [32m"Comma-separated row fields to keep, e.g. exchange,coin,rate_pct; the others are dropped from every row. Unknown names are a 400 that lists the fields."[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfIReadOnlyListOfCoinItem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: [
+                                        {
+                                            [1m"coin"[0m: [32m"PEPE"[0m,
+                                            [1m"venue_count"[0m: [33m18[0m,
+                                            [1m"exchanges"[0m: [
+                                                [32m"Binance"[0m,
+                                                [32m"BingX"[0m,
+                                                [32m"Bybit"[0m,
+                                                [32m"GateIo"[0m,
+                                                [32m"Mexc"[0m,
+                                                [32m"Okx"[0m
+                                            ],
+                                            [1m"volume_24h_usdt"[0m: [33m20313414258[0m,
+                                            [1m"funding_url"[0m: [32m"https://arbitron.app/funding-rates/coin/pepe?utm_source=api"[0m
+                                        }
+                                    ],
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/funding-rates/coins?utm_source=api"[0m,
+                                        [1m"count"[0m: [33m1[0m,
+                                        [1m"total"[0m: [33m654[0m
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    [1m"400"[0m: {
+                        [1m"description"[0m: [32m"Bad Request"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/problem+json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiProblem"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"type"[0m: [32m"https://arbitron.app/developers/errors#invalid-parameter"[0m,
+                                    [1m"title"[0m: [32m"A parameter is not valid"[0m,
+                                    [1m"status"[0m: [33m400[0m,
+                                    [1m"detail"[0m: [32m"'sort' must be one of abs_rate_desc, abs_rate_asc, rate_desc, rate_asc, apr_desc, apr_asc, sum_7d_desc, sum_7d_asc, sum_30d_desc, sum_30d_asc, volume_desc, volume_asc, next_funding_asc, next_funding_desc, coin_asc, exchange_asc."[0m,
+                                    [1m"instance"[0m: [32m"0HN7Q2K3J4L5M:00000001"[0m,
+                                    [1m"code"[0m: [32m"invalid-parameter"[0m,
+                                    [1m"docs"[0m: [32m"https://arbitron.app/developers/errors"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/api/v1/usage"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"ApiV1Endpoints"[0m
+                ],
+                [1m"summary"[0m: [32m"This key's usage and limits"[0m,
+                [1m"description"[0m: [32m"The plan behind the key, the month and minute windows, and what the plan includes (history depth, delay, commercial use)."[0m,
+                [1m"operationId"[0m: [32m"getUsage"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"application/json"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiEnvelopeOfUsageResponse"[0m
+                                },
+                                [1m"example"[0m: {
+                                    [1m"data"[0m: {
+                                        [1m"plan"[0m: [32m"api-pro"[0m,
+                                        [1m"key_prefix"[0m: [32m"arb_live_DPxk\u2026"[0m,
+                                        [1m"scopes"[0m: [
+                                            [32m"funding:read"[0m,
+                                            [32m"history:read"[0m,
+                                            [32m"spreads:read"[0m,
+                                            [32m"listings:read"[0m,
+                                            [32m"usage:read"[0m,
+                                            [32m"mcp:read"[0m
+                                        ],
+                                        [1m"month"[0m: {
+                                            [1m"used"[0m: [33m1842[0m,
+                                            [1m"limit"[0m: [33m300000[0m,
+                                            [1m"remaining"[0m: [33m298158[0m,
+                                            [1m"resets_at"[0m: [32m"2026-10-01T00:00:00Z"[0m
+                                        },
+                                        [1m"minute"[0m: {
+                                            [1m"used"[0m: [33m3[0m,
+                                            [1m"limit"[0m: [33m300[0m,
+                                            [1m"remaining"[0m: [33m297[0m,
+                                            [1m"resets_at"[0m: [32m"2026-09-21T12:01:00Z"[0m
+                                        },
+                                        [1m"history_days"[0m: [1;34mnull[0m,
+                                        [1m"delay_seconds"[0m: [33m0[0m,
+                                        [1m"commercial_use"[0m: [1;34mtrue[0m,
+                                        [1m"upgrade_url"[0m: [32m"https://arbitron.app/developers#plans"[0m
+                                    },
+                                    [1m"meta"[0m: {
+                                        [1m"as_of"[0m: [32m"2026-09-21T12:00:04Z"[0m,
+                                        [1m"delayed_seconds"[0m: [33m0[0m,
+                                        [1m"source"[0m: [32m"arbitron.app"[0m,
+                                        [1m"url"[0m: [32m"https://arbitron.app/settings/api?utm_source=api"[0m
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    [1m"components"[0m: {
+        [1m"schemas"[0m: {
+            [1m"ApiEnvelopeOfCoinFundingResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"oneOf"[0m: [
+                            {
+                                [1m"type"[0m: [32m"null"[0m
+                            },
+                            {
+                                [1m"$ref"[0m: [32m"#/components/schemas/CoinFundingResponse"[0m
+                            }
+                        ]
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfFundingHistoryResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"oneOf"[0m: [
+                            {
+                                [1m"type"[0m: [32m"null"[0m
+                            },
+                            {
+                                [1m"$ref"[0m: [32m"#/components/schemas/FundingHistoryResponse"[0m
+                            }
+                        ]
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfIReadOnlyListOfCoinItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/CoinItem"[0m
+                        }
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfIReadOnlyListOfCurrentSpreadItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/CurrentSpreadItem"[0m
+                        }
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfIReadOnlyListOfExchangeItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ExchangeItem"[0m
+                        }
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfIReadOnlyListOfFundingRateItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FundingRateItem"[0m
+                        }
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfIReadOnlyListOfListingItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListingItem"[0m
+                        }
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfSpreadBacktestResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"oneOf"[0m: [
+                            {
+                                [1m"type"[0m: [32m"null"[0m
+                            },
+                            {
+                                [1m"$ref"[0m: [32m"#/components/schemas/SpreadBacktestResponse"[0m
+                            }
+                        ]
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiEnvelopeOfUsageResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"data"[0m,
+                    [32m"meta"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"data"[0m: {
+                        [1m"oneOf"[0m: [
+                            {
+                                [1m"type"[0m: [32m"null"[0m
+                            },
+                            {
+                                [1m"$ref"[0m: [32m"#/components/schemas/UsageResponse"[0m
+                            }
+                        ]
+                    },
+                    [1m"meta"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ApiMeta"[0m
+                    }
+                }
+            },
+            [1m"ApiMeta"[0m: {
+                [1m"required"[0m: [
+                    [32m"as_of"[0m,
+                    [32m"delayed_seconds"[0m,
+                    [32m"source"[0m,
+                    [32m"url"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"as_of"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"delayed_seconds"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"source"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"count"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"total"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"next_cursor"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ]
+                    }
+                }
+            },
+            [1m"ApiProblem"[0m: {
+                [1m"required"[0m: [
+                    [32m"type"[0m,
+                    [32m"title"[0m,
+                    [32m"status"[0m,
+                    [32m"detail"[0m,
+                    [32m"instance"[0m,
+                    [32m"code"[0m,
+                    [32m"docs"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"title"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"detail"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"instance"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"code"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"docs"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"suggestions"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                }
+            },
+            [1m"CoinFundingResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"coin"[0m,
+                    [32m"venue_count"[0m,
+                    [32m"spread_pct"[0m,
+                    [32m"highest"[0m,
+                    [32m"lowest"[0m,
+                    [32m"best_short_exchange"[0m,
+                    [32m"best_long_exchange"[0m,
+                    [32m"total_volume_24h_usdt"[0m,
+                    [32m"inverse_venues"[0m,
+                    [32m"rates"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"venue_count"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"spread_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"highest"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/FundingVenueRef"[0m
+                    },
+                    [1m"lowest"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/FundingVenueRef"[0m
+                    },
+                    [1m"best_short_exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"best_long_exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"total_volume_24h_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"inverse_venues"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    [1m"rates"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FundingRateItem"[0m
+                        }
+                    }
+                }
+            },
+            [1m"CoinItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"coin"[0m,
+                    [32m"venue_count"[0m,
+                    [32m"exchanges"[0m,
+                    [32m"volume_24h_usdt"[0m,
+                    [32m"funding_url"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"venue_count"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"exchanges"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    [1m"volume_24h_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"funding_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"CurrentSpreadItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"symbol"[0m,
+                    [32m"coin"[0m,
+                    [32m"exchange_a"[0m,
+                    [32m"exchange_b"[0m,
+                    [32m"spread_pct"[0m,
+                    [32m"direction"[0m,
+                    [32m"long_a_short_b_pct"[0m,
+                    [32m"short_a_long_b_pct"[0m,
+                    [32m"bid_a"[0m,
+                    [32m"ask_a"[0m,
+                    [32m"bid_b"[0m,
+                    [32m"ask_b"[0m,
+                    [32m"volume_a_usdt"[0m,
+                    [32m"volume_b_usdt"[0m,
+                    [32m"funding_rate_a_pct"[0m,
+                    [32m"funding_rate_b_pct"[0m,
+                    [32m"funding_interval_hours_a"[0m,
+                    [32m"funding_interval_hours_b"[0m,
+                    [32m"next_funding_at_a"[0m,
+                    [32m"next_funding_at_b"[0m,
+                    [32m"strength"[0m,
+                    [32m"updated_at"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"symbol"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"exchange_a"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"exchange_b"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"spread_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"direction"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"long_a_short_b_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"short_a_long_b_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"bid_a"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"ask_a"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"bid_b"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"ask_b"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"volume_a_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"volume_b_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"funding_rate_a_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"funding_rate_b_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"funding_interval_hours_a"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"funding_interval_hours_b"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"next_funding_at_a"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"next_funding_at_b"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"strength"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"updated_at"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    }
+                }
+            },
+            [1m"DiscoveryAuth"[0m: {
+                [1m"required"[0m: [
+                    [32m"type"[0m,
+                    [32m"header"[0m,
+                    [32m"key_prefix"[0m,
+                    [32m"get_key_url"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"header"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"key_prefix"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"get_key_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"DiscoveryEndpoint"[0m: {
+                [1m"required"[0m: [
+                    [32m"method"[0m,
+                    [32m"path"[0m,
+                    [32m"scope"[0m,
+                    [32m"summary"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"method"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"path"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"scope"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ]
+                    },
+                    [1m"summary"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"DiscoveryResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"name"[0m,
+                    [32m"version"[0m,
+                    [32m"description"[0m,
+                    [32m"docs_url"[0m,
+                    [32m"openapi_url"[0m,
+                    [32m"reference_url"[0m,
+                    [32m"llms_url"[0m,
+                    [32m"mcp_url"[0m,
+                    [32m"plans_url"[0m,
+                    [32m"auth"[0m,
+                    [32m"endpoints"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"version"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"docs_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"openapi_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"reference_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"llms_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"mcp_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"plans_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"auth"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/DiscoveryAuth"[0m
+                    },
+                    [1m"endpoints"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/DiscoveryEndpoint"[0m
+                        }
+                    }
+                }
+            },
+            [1m"ExchangeItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"exchange"[0m,
+                    [32m"name"[0m,
+                    [32m"icon_url"[0m,
+                    [32m"tracked_instruments"[0m,
+                    [32m"max_leverage"[0m,
+                    [32m"taker_fee_pct"[0m,
+                    [32m"trading_enabled"[0m,
+                    [32m"has_spot"[0m,
+                    [32m"fee_url"[0m,
+                    [32m"specs_url"[0m,
+                    [32m"funding_url"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"icon_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"tracked_instruments"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"max_leverage"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"uint32"[0m
+                    },
+                    [1m"taker_fee_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"trading_enabled"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"has_spot"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"fee_url"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ]
+                    },
+                    [1m"specs_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"funding_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"FundingDailyPoint"[0m: {
+                [1m"required"[0m: [
+                    [32m"day"[0m,
+                    [32m"apr_pct"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"day"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"apr_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    }
+                }
+            },
+            [1m"FundingHistoryResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"coin"[0m,
+                    [32m"resolution"[0m,
+                    [32m"from"[0m,
+                    [32m"to"[0m,
+                    [32m"series"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"resolution"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"from"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"to"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"series"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FundingHistorySeries"[0m
+                        }
+                    }
+                }
+            },
+            [1m"FundingHistorySeries"[0m: {
+                [1m"required"[0m: [
+                    [32m"exchange"[0m,
+                    [32m"symbol"[0m,
+                    [32m"daily"[0m,
+                    [32m"settlements"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"symbol"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"daily"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FundingDailyPoint"[0m
+                        }
+                    },
+                    [1m"settlements"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"array"[0m
+                        ],
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FundingSettlementPoint"[0m
+                        }
+                    }
+                }
+            },
+            [1m"FundingRateItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"exchange"[0m,
+                    [32m"symbol"[0m,
+                    [32m"coin"[0m,
+                    [32m"is_inverse"[0m,
+                    [32m"rate_pct"[0m,
+                    [32m"apr_pct"[0m,
+                    [32m"sum_7d_pct"[0m,
+                    [32m"sum_30d_pct"[0m,
+                    [32m"interval_hours"[0m,
+                    [32m"next_funding_at"[0m,
+                    [32m"volume_24h_usdt"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"symbol"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"is_inverse"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"rate_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"apr_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"sum_7d_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"sum_30d_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"interval_hours"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"next_funding_at"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"volume_24h_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    }
+                }
+            },
+            [1m"FundingSettlementPoint"[0m: {
+                [1m"required"[0m: [
+                    [32m"time"[0m,
+                    [32m"rate_pct"[0m,
+                    [32m"interval_hours"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"time"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"rate_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"interval_hours"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"FundingVenueRef"[0m: {
+                [1m"required"[0m: [
+                    [32m"exchange"[0m,
+                    [32m"symbol"[0m,
+                    [32m"rate_pct"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"symbol"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"rate_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    }
+                }
+            },
+            [1m"ListingItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"exchange"[0m,
+                    [32m"symbol"[0m,
+                    [32m"coin"[0m,
+                    [32m"kind"[0m,
+                    [32m"status"[0m,
+                    [32m"effective_at"[0m,
+                    [32m"source"[0m,
+                    [32m"announcement_url"[0m,
+                    [32m"detected_at"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"exchange"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"symbol"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"kind"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ]
+                    },
+                    [1m"effective_at"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"source"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"announcement_url"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ]
+                    },
+                    [1m"detected_at"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    }
+                }
+            },
+            [1m"SpreadBacktestItem"[0m: {
+                [1m"required"[0m: [
+                    [32m"symbol"[0m,
+                    [32m"coin"[0m,
+                    [32m"exchange_a"[0m,
+                    [32m"exchange_b"[0m,
+                    [32m"est_profit_pct"[0m,
+                    [32m"avg_profit_pct"[0m,
+                    [32m"fee_pct_cycle"[0m,
+                    [32m"spread_range_pct"[0m,
+                    [32m"cycles"[0m,
+                    [32m"confidence"[0m,
+                    [32m"volume_a_usdt"[0m,
+                    [32m"volume_b_usdt"[0m,
+                    [32m"last_cycle_at"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"symbol"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"coin"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"exchange_a"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"exchange_b"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"est_profit_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"avg_profit_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"fee_pct_cycle"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"spread_range_pct"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"cycles"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"confidence"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"volume_a_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"volume_b_usdt"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"[0m,
+                        [1m"type"[0m: [
+                            [32m"number"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"last_cycle_at"[0m: {
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"date-time"[0m
+                    }
+                }
+            },
+            [1m"SpreadBacktestResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"size_usd"[0m,
+                    [32m"withheld_top"[0m,
+                    [32m"spreads"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"size_usd"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"withheld_top"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"spreads"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/SpreadBacktestItem"[0m
+                        }
+                    }
+                }
+            },
+            [1m"UsageResponse"[0m: {
+                [1m"required"[0m: [
+                    [32m"plan"[0m,
+                    [32m"key_prefix"[0m,
+                    [32m"scopes"[0m,
+                    [32m"month"[0m,
+                    [32m"minute"[0m,
+                    [32m"history_days"[0m,
+                    [32m"delay_seconds"[0m,
+                    [32m"commercial_use"[0m,
+                    [32m"upgrade_url"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"plan"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"key_prefix"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"scopes"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    },
+                    [1m"month"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/UsageWindow"[0m
+                    },
+                    [1m"minute"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/UsageWindow"[0m
+                    },
+                    [1m"history_days"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"null"[0m,
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"delay_seconds"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"commercial_use"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"upgrade_url"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"UsageWindow"[0m: {
+                [1m"required"[0m: [
+                    [32m"used"[0m,
+                    [32m"limit"[0m,
+                    [32m"remaining"[0m,
+                    [32m"resets_at"[0m
+                ],
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"used"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"limit"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"remaining"[0m: {
+                        [1m"pattern"[0m: [32m"^-?(?:0|[1-9]\\d*)$"[0m,
+                        [1m"type"[0m: [
+                            [32m"integer"[0m,
+                            [32m"string"[0m
+                        ],
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"resets_at"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    }
+                }
+            }
+        },
+        [1m"securitySchemes"[0m: {
+            [1m"ApiKey"[0m: {
+                [1m"type"[0m: [32m"http"[0m,
+                [1m"description"[0m: [32m"Your API key as a bearer token. The X-Api-Key header is accepted too."[0m,
+                [1m"scheme"[0m: [32m"bearer"[0m,
+                [1m"bearerFormat"[0m: [32m"arb_live_<43 chars>_<6 chars>"[0m
+            }
+        }
+    },
+    [1m"security"[0m: [
+        {
+            [1m"ApiKey"[0m: []
+        }
+    ],
+    [1m"tags"[0m: [
+        {
+            [1m"name"[0m: [32m"ApiV1Endpoints"[0m
+        }
+    ]
+}

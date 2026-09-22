@@ -1,0 +1,66 @@
+{
+    [1m"serverInfo"[0m: {
+        [1m"name"[0m: [32m"Arbitron"[0m,
+        [1m"version"[0m: [32m"1.2.0"[0m,
+        [1m"description"[0m: [32m"Funding rates, cross-venue spreads and listings for crypto perpetual futures. Read-only."[0m,
+        [1m"websiteUrl"[0m: [32m"https://arbitron.app/developers"[0m
+    },
+    [1m"transport"[0m: {
+        [1m"type"[0m: [32m"streamable-http"[0m,
+        [1m"url"[0m: [32m"https://arbitron.app/mcp"[0m
+    },
+    [1m"authentication"[0m: {
+        [1m"type"[0m: [32m"oauth2"[0m,
+        [1m"resourceMetadataUrl"[0m: [32m"https://arbitron.app/.well-known/oauth-protected-resource/mcp"[0m,
+        [1m"authorizationServerUrl"[0m: [32m"https://arbitron.app/.well-known/oauth-authorization-server"[0m,
+        [1m"alternative"[0m: [32m"bearer"[0m,
+        [1m"apiKeyUrl"[0m: [32m"https://arbitron.app/settings/api"[0m
+    },
+    [1m"tools"[0m: [
+        {
+            [1m"name"[0m: [32m"arbitron_search_coins"[0m,
+            [1m"title"[0m: [32m"Search coins"[0m,
+            [1m"description"[0m: [32m"Finds coins by ticker (the start of it, or any part with match=contains) and returns, per coin, the venues quoting a perpetual on it, its 24h perpetual volume in USDT and the page that shows its funding. Filter by venue, venue count or volume. Use it to resolve a name to the ticker the other tools take."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_funding_rates"[0m,
+            [1m"title"[0m: [32m"Funding rates across venues"[0m,
+            [1m"description"[0m: [32m"Current funding rate of perpetual contracts on every venue Arbitron tracks, one row per venue and symbol, sorted by absolute rate unless told otherwise. Rates are percent per funding settlement (0.01 = 1 basis point); apr_pct is the annualised carry net of costs. Each row carries the settlement interval, the next settlement time, 7d and 30d sums and 24h volume. Filter by coin, venue, signed or absolute rate bounds, APR, interval, contract type, volume or time to the next settlement; for one coin's cross-venue picture prefer arbitron_get_coin_funding."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_coin_funding"[0m,
+            [1m"title"[0m: [32m"One coin's funding across venues"[0m,
+            [1m"description"[0m: [32m"Every venue quoting a perpetual on one coin, the spread between the highest and lowest funding rate, which venue currently pays a short best (highest rate) and which pays a long best (lowest rate), and the venues that only quote an inverse contract. Rates are percent per funding settlement (0.01 = 1 basis point); apr_pct is the annualised carry net of costs. Narrow the ranking to a venue list or a volume floor. Unknown tickers return suggestions."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_funding_history"[0m,
+            [1m"title"[0m: [32m"Funding history"[0m,
+            [1m"description"[0m: [32m"Funding history for one coin. resolution \"1d\" (default) returns one annualised APR point in percent per day for each venue quoting the coin, up to 180 days; resolution \"settlement\" returns every settlement print (rate_pct per settlement) for one venue, up to 92 days per call and needs exactly one exchange. order=desc with a limit reads the last N points. How far back the account may reach depends on its plan; the error says so."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_spreads"[0m,
+            [1m"title"[0m: [32m"Current cross-venue spreads"[0m,
+            [1m"description"[0m: [32m"The price spread between two venues' perpetuals on the same coin RIGHT NOW, from the engine's last print (seconds old): one row per venue pair and symbol, best spread first. spread_pct is the better of the two entry directions in percent of price and direction names it (long_a_short_b = buy on exchange_a, sell on exchange_b); both directions, the bid and ask on each leg, 24h volumes, the funding rates with their intervals and strength (0 to 5) are included. Filter by coin, venues (either or both legs), spread bounds, direction, volume on both legs, strength or print age. For how often a spread paid over a window use arbitron_get_spread_backtest."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_spread_backtest"[0m,
+            [1m"title"[0m: [32m"Backtested cross-venue spreads"[0m,
+            [1m"description"[0m: [32m"Backtested spreads from the public scanner: for each venue pair and symbol, how the spread behaved over the scan window when priced against real order-book depth for an order of size_usd. est_profit_pct is the estimated profit per round trip after fees (percent), cycles counts how often the spread opened and closed, confidence is 0 to 100. Filter by coin, venues, profit bounds, cycles, confidence, volume on both legs or how recently the last cycle closed. A backtest, not the live print: use arbitron_get_spreads for the spread right now. Demo accounts see the public page's view with the top rows withheld (withheld_top says how many)."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_listings"[0m,
+            [1m"title"[0m: [32m"Listings and delistings"[0m,
+            [1m"description"[0m: [32m"Announced perpetual listings and delistings across venues: venue, symbol, coin, kind (listing or delisting), status, when it takes effect, how it was detected and the announcement URL. Defaults to what takes effect in the next 14 days, nearest first. Filter by coin, venue, kind, status, source, or what was first seen in the last N hours."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_exchanges"[0m,
+            [1m"title"[0m: [32m"Venues"[0m,
+            [1m"description"[0m: [32m"The venues Arbitron serves, with the number of tracked instruments, maximum leverage, default taker fee in percent, whether spot exists, and links to each venue's contract specs and funding pages. The exchange field is the spelling the other tools accept."[0m
+        },
+        {
+            [1m"name"[0m: [32m"arbitron_get_usage"[0m,
+            [1m"title"[0m: [32m"Plan and usage"[0m,
+            [1m"description"[0m: [32m"The plan behind this credential and its usage: calls used and remaining in the month and in the current minute, when each window resets, history reach in days, data delay in seconds and whether commercial use is included. Explains a rate limit or quota error."[0m
+        }
+    ]
+}
