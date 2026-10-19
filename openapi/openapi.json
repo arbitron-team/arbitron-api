@@ -5174,7 +5174,10 @@
                         "type": "boolean"
                     },
                     "upgrade_url": {
-                        "type": "string"
+                        "type": [
+                            "null",
+                            "string"
+                        ]
                     }
                 }
             },
