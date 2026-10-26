@@ -1,7 +1,7 @@
 {
     "serverInfo": {
         "name": "Arbitron",
-        "version": "1.3.0",
+        "version": "1.4.0",
         "description": "Funding rates, cross-venue spreads and listings for crypto perpetual futures, the signed-in trader's own cards, trades, PnL and balances, and the Arbitron knowledge base. Read-only.",
         "websiteUrl": "https://arbitron.app/developers"
     },
@@ -45,7 +45,12 @@
         {
             "name": "arbitron_get_spread_backtest",
             "title": "Backtested cross-venue spreads",
-            "description": "Backtested spreads from the public scanner: for each venue pair and symbol, how the spread behaved over the scan window when priced against real order-book depth for an order of size_usd. est_profit_pct is the estimated profit per round trip after fees (percent), cycles counts how often the spread opened and closed, confidence is 0 to 100, and strategy_url opens a new strategy on that pair in the Arbitron terminal with the coin and both venues filled in (the trader sets the thresholds and size there). Filter by coin, venues, profit bounds, cycles, confidence, volume on both legs or how recently the last cycle closed. A backtest, not the live print: use arbitron_get_spreads for the spread right now. Demo accounts never see the five best rows of any venue, whatever the filter (withheld_top says how many the snapshot holds back), and read at most 100 rows deep."
+            "description": "Backtested spreads from the public scanner: for each venue pair and symbol, how the spread behaved over the scan window when priced against real order-book depth for an order of size_usd. est_profit_pct is the estimated profit per round trip after fees (percent), cycles counts how often the spread opened and closed, confidence is 0 to 100, and strategy_url opens a new strategy on that pair in the Arbitron terminal with the coin and both venues filled in (the trader sets the thresholds and size there; arbitron_get_strategy_link fills the thresholds in too). Filter by coin, venues, profit bounds, cycles, confidence, volume on both legs or how recently the last cycle closed. A backtest, not the live print: use arbitron_get_spreads for the spread right now. Demo accounts never see the five best rows of any venue, whatever the filter (withheld_top says how many the snapshot holds back), and read at most 100 rows deep."
+        },
+        {
+            "name": "arbitron_get_strategy_link",
+            "title": "Link to set up a spread strategy",
+            "description": "A link that opens the Arbitron terminal's new-strategy form on one venue pair, trading both directions, with the open and close thresholds filled in. Thresholds are percent of price in the card's own frame: open_spread_pct is the spread captured on entry, close_spread_pct the spread captured on exit (negative = a give-back accepted on exit), and together they must capture more than zero. The form shows both values; the trader presses Create, and the strategy trades only after they press Start on it. The trader's own defaults set the order size. If the trader already has a strategy on the pair, the link focuses it instead, and with AutoSpread on in the trader's defaults Auto sets the thresholds."
         },
         {
             "name": "arbitron_get_listings",
@@ -76,6 +81,11 @@
             "name": "arbitron_get_my_card",
             "title": "One of my trading cards in detail",
             "description": "One trading card in full: its settings, the risk limits (force stop, exit on loss, liquidation protection, order pricing per leg), the current session's fees, funding, volume, cycles and fee share of gross, the open position on each leg with entry, unrealized PnL and liquidation price, and its 20 most recent paired trades from the last 31 days. Money is in USD; net figures include fee rebates; times are UTC."
+        },
+        {
+            "name": "arbitron_get_my_card_diagnosis",
+            "title": "Why my cards are or are not trading",
+            "description": "For one card, or every running, open and error card: the first thing stopping it from trading right now (blocker: an error, a refused start, a restricted or flipping venue, legs out of sync, a full ladder, Exit or Hold Mode, a paused copy) with the explanation the dashboard shows, else how far the live spread still is from the threshold that acts (gate open or close, its threshold_pct, and gap_pct in percent: the live spread is threshold_pct minus gap_pct, so zero or below = reached), the most the spread reached past that threshold over 12 hours (reach_12h_pct, negative = never reached), orders held against the cap the worker enforces, and minutes without a fill. prices names the source: card = the card's own depth-aware feed, as the dashboard shows it; market = the engine's top-of-book print for the pair, used when no dashboard has the card loaded (the card may price deeper, reach_12h_pct is null, and a stalled card feed is not visible); none = no prices."
         },
         {
             "name": "arbitron_get_my_trades",
